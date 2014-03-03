@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="45dp"
+    android:background="@drawable/listview_item_selector"
+    android:padding="12dp" >
+    
+    <TextView android:id="@+id/textview_inbox_messege_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:text="@string/app_name"
+        android:layout_alignParentRight="true" />
+    
+    <TextView android:id="@+id/textview_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceListItem"
+        android:text="@string/app_name"
+        android:layout_toLeftOf="@id/textview_inbox_messege_count"/>
+    
+    <TextView android:id="@+id/textview_body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/app_name"
+        android:layout_below="@id/textview_inbox_messege_count" />
+    
+
+</RelativeLayout>

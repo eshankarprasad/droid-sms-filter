@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="background_color">#FDFDFD</color>
+    <color name="background_search">#F0F0F0</color>
+    <color name="background_color1">#cccccc</color>
+    <color name="transparent_color">#F2F2F2</color>
+    <color name="separator_color">#cccccc</color>
+    <color name="grey_background_color">#cecece</color>
+    <color name="grey_dark">#606060</color>
+    <color name="grey_light">#B2B2B2</color>
+    <color name="grey_light_syndicated_thumbnail">#B2B2B2</color>
+    <color name="white_syndicated_thumbnail">#FDFDFD</color>
+    <color name="text_shadow">#000000</color>
+    <color name="text_shadow_white">#FFFFFF</color>
+	<color name="violet">#200e33</color>
+	<color name="violet_light">#867790</color>
+	<color name="background_normal">#33b5e5</color>
+    <!-- custom color for pressed state -->
+    <drawable name="pressed_color">#0b84aa</drawable>
+
+    <!-- transperent color for normal state -->
+    <drawable name="normal_color">#e6e6e6</drawable>
+
+    <color name="edt_pressed">#99CBFF</color>
+    <color name="edt_focused">#CEF7F6</color>
+    <color name="edt_default">#000000</color>
+    <color name="light_blue">#659EC7</color>
+    <color name="blue">#3090C7</color>
+    <color name="grey_extreme_light">#e6e6e6</color>
+	<color name="red">#FF0000</color>
+	<color name="theme_color">#33b5e5</color>
+	<color name="white">#fff</color>
+	
+</resources>

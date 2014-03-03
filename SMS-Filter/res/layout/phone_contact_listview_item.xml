@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="45dp"
+    android:orientation="vertical"
+    android:background="@drawable/listview_item_selector"
+    android:clickable="true"
+    android:padding="8dp">
+    <CheckBox
+        android:id="@+id/checkbox_contact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:textAppearance="?android:attr/textAppearanceListItem" />
+
+    <TextView
+        android:id="@+id/textview_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="40dp"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall" />
+
+</LinearLayout>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minHeight="300dp"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/layout_button_add_new_category"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/listview_item_selector"
+        android:clickable="true"
+        android:padding="8dp" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_add_to_new_category"
+            android:textAppearance="?android:attr/textAppearanceListItem" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:contentDescription="@string/add_category_text"
+            android:src="@drawable/button_add" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_edittext_new_category"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone" >
+
+        <ImageButton
+            android:id="@+id/button_add_new_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/button_save"
+            android:src="@drawable/ic_action_save"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="-5dp" />
+
+        <EditText
+            android:id="@+id/edittext_new_category"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:layout_marginLeft="2dp"
+            android:background="@drawable/selector_edit_text_border"
+            android:hint="@string/hint_category_name"
+            android:layout_toLeftOf="@id/button_add_new_category"
+            android:inputType="textCapWords" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@android:color/darker_gray" />
+
+    <ListView
+        android:id="@+id/listview_options_add_to_category"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent" >
+    </ListView>
+
+</LinearLayout>

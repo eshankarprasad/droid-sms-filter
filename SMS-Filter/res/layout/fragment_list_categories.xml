@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity$CategoryFragment" >
+
+    <RelativeLayout
+        android:id="@+id/relative_layout_add_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/listview_item_selector"
+        android:gravity="center_vertical"
+        android:minHeight="46dp"
+        android:padding="12dp" >
+
+        <TextView
+            android:id="@+id/button_add_categry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/add_category_text"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:contentDescription="@string/title_section_categories"
+            android:src="@drawable/button_add" />
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/view_separator"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@android:color/darker_gray" 
+        android:layout_below="@id/relative_layout_add_category"/>
+
+    <ListView
+        android:id="@+id/listview_categories"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/view_separator" >
+    </ListView>
+
+    <TextView
+        android:id="@+id/textview_category_name_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical|left"
+        android:paddingLeft="10dp"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/white"
+        android:background="@color/theme_color"
+        android:textStyle="italic|bold"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true" />
+
+    <TextView
+        android:id="@+id/textview_category_from"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical|left"
+        android:paddingLeft="10dp"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textStyle="italic|bold"
+        android:visibility="gone"
+        android:textColor="@color/white"
+        android:background="@color/theme_color"
+        android:layout_alignParentBottom="true" />
+    
+    <ListView
+        android:id="@+id/listview_categories_inbox"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/textview_category_name_label"
+        android:visibility="gone" >
+    </ListView>
+
+    <ListView
+        android:id="@+id/listview_categories_messeges"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:layout_above="@id/textview_category_from" >
+    </ListView>
+
+</RelativeLayout>
