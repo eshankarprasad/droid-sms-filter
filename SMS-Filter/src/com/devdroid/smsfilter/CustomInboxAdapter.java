@@ -8,8 +8,6 @@ import java.util.Map;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
-import android.database.Cursor;
-import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,13 +28,15 @@ public class CustomInboxAdapter extends BaseAdapter   implements OnClickListener
     int i=0;
      
     /*************  CustomAdapter Constructor *****************/
-    public CustomInboxAdapter(Activity activity, Resources res) {
+    public CustomInboxAdapter(Activity activity, Map<String, List<SMSListItem>> map, Resources res) {
          
            /********** Take passed values **********/
             this.activity = activity;
             this.res = res;
             this.keys = new ArrayList<String>();
-            this.map = new LinkedHashMap<String, List<SMSListItem>>();
+            this.map = map; //new LinkedHashMap<String, List<SMSListItem>>();
+            this.keys.addAll(this.map.keySet());
+            
             /***********  Layout inflator to call external xml layout () ***********/
              inflater = ( LayoutInflater ) this.activity.
                                          getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -99,29 +99,35 @@ public class CustomInboxAdapter extends BaseAdapter   implements OnClickListener
         }
         else {
             
-        	/***** Get each Model object from Arraylist ********/
-        	List<SMSListItem> tempList = map.get(keys.get(position));
-        	
-        	SMSListItem smsListItem = (SMSListItem) tempList.get(0);
-             
-            /************  Set Model values in Holder elements ***********/
-
-        	if(smsListItem.getSms().getPerson().equals("")) {
-        		holder.textAddress.setText(smsListItem.getSms().getAddress());
-        	} else {
-        		holder.textAddress.setText(smsListItem.getSms().getPerson());
+	        	/***** Get each Model object from Arraylist ********/
+	        	List<SMSListItem> tempList = map.get(keys.get(position));
+	        	
+	        	if(null == tempList.get(0)) {
+	        		notifyDataSetChanged();
+	        		
+	        	} else {
+	        	
+	        	SMSListItem smsListItem = (SMSListItem) tempList.get(0);
+	             
+	            /************  Set Model values in Holder elements ***********/
+	
+	        	if(smsListItem.getSms().getPerson().equals("")) {
+	        		holder.textAddress.setText(smsListItem.getSms().getAddress());
+	        	} else {
+	        		holder.textAddress.setText(smsListItem.getSms().getPerson());
+	        	}
+	            String body = smsListItem.getSms().getBody();
+	            if(body.length() > 20) {
+	            	holder.textBody.setText(body.substring(0, 19) + "...");
+	            } else {
+	            	holder.textBody.setText(body);
+	            }
+	            holder.textCount.setText("(" + tempList.size() + ")");
+	              
+	            /******** Set Item Click Listner for LayoutInflater for each row *******/
+	            mConvertView.setOnClickListener(new OnItemClickListener(smsListItem));
+	            mConvertView.setOnLongClickListener(new OnItemLongClickListener(smsListItem));
         	}
-            String body = smsListItem.getSms().getBody();
-            if(body.length() > 20) {
-            	holder.textBody.setText(body.substring(0, 19) + "...");
-            } else {
-            	holder.textBody.setText(body);
-            }
-            holder.textCount.setText("(" + tempList.size() + ")");
-              
-            /******** Set Item Click Listner for LayoutInflater for each row *******/
-            mConvertView.setOnClickListener(new OnItemClickListener(smsListItem));
-            mConvertView.setOnLongClickListener(new OnItemLongClickListener(smsListItem));
         }
         return mConvertView;
     }

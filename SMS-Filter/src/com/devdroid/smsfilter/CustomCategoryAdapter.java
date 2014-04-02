@@ -93,7 +93,7 @@ public class CustomCategoryAdapter extends BaseAdapter   implements OnClickListe
         }
          
         if(categoryItems.size() <= 0) {
-        	holder.textCategoryName.setText("No category found. Create new category by selecting above button, or go into \"INBOX\" section by swiping right the screen and long press on an SMS item");
+        	holder.textCategoryName.setText("No category found. Create new category by selecting above button, or go into \"INBOX\" section by swiping left the screen and long press on an SMS item");
             holder.textMessegeCount.setVisibility(View.GONE);
             mConvertView.setOnLongClickListener(null);
             mConvertView.setOnClickListener(null);

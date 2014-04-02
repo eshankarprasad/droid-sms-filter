@@ -5,10 +5,37 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity$InboxFragment" >
 
+    <EditText android:id="@+id/edittext_inbox_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/selector_edit_text_border"
+        android:inputType="text"
+        android:padding="8dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:layout_marginTop="2dp"
+        android:hint="@string/hint_search_contact"
+        android:drawableRight="@drawable/ic_menu_search"
+        android:visibility="gone" />
+    
+    <ImageView
+        android:id="@+id/imageview_seperator_inbox"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:src="@drawable/ic_btn_down"
+        android:scaleType="center"
+        android:background="@drawable/down_button_item_selector"
+        android:layout_centerInParent="true"
+        android:layout_below="@id/edittext_inbox_search"
+        android:layout_alignWithParentIfMissing="true"
+        android:clickable="true"
+        android:contentDescription="@string/title_section_inbox" />
+    
     <ListView
         android:id="@+id/listview_inbox"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:layout_below="@id/imageview_seperator_inbox" >
     </ListView>
 
     <TextView

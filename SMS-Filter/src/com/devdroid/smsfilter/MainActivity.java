@@ -10,7 +10,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -28,18 +27,18 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -357,6 +356,7 @@ private class FetchDeviceSMSTask extends AsyncTask<String, Void, Map<String, Lis
 	private void proceedLoading() {
 		
 		AppSession session = (AppSession) getApplication();
+		final Map<String, List<SMSListItem>> map = session.getMap();
 		contactList = session.getPhoneContacts();
 		
 		// Create the adapter that will return a fragment for each of the three
@@ -372,6 +372,7 @@ private class FetchDeviceSMSTask extends AsyncTask<String, Void, Map<String, Lis
 		listViewCategoryInbox = (ListView) findViewById(R.id.listview_categories_inbox);
 		listViewCategory = (ListView) findViewById(R.id.listview_categories);
 		listViewInbox = (ListView) findViewById(R.id.listview_inbox);
+		final EditText editTextInboxSearch = (EditText) findViewById(R.id.edittext_inbox_search);
 		
 		mViewPager.setOnPageChangeListener(new OnPageChangeListener() {
 			
@@ -386,7 +387,18 @@ private class FetchDeviceSMSTask extends AsyncTask<String, Void, Map<String, Lis
 						listViewInbox = (ListView) findViewById(R.id.listview_inbox);
 					}
 					//listViewInbox.setVisibility(View.VISIBLE);
-					((BaseAdapter)listViewInbox.getAdapter()).notifyDataSetChanged();
+					EditText editTextInboxSearch = (EditText) findViewById(R.id.edittext_inbox_search);
+					String searchText = editTextInboxSearch.getText().toString().trim();
+					if("".equals(searchText)) {
+						((BaseAdapter)listViewInbox.getAdapter()).notifyDataSetChanged();
+					} else {
+						
+						String searchTerm = editTextInboxSearch.getText().toString().trim();
+						Map<String, List<SMSListItem>> newMap =  Utils.searchInboxItems(searchTerm, map);
+						
+						CustomInboxAdapter adapter = new CustomInboxAdapter(MainActivity.this, newMap, getResources());
+						listViewInbox.setAdapter(adapter);
+					}
 					
 					/*if(listViewMesseges == null) {
 						listViewMesseges = (ListView) findViewById(R.id.listview_messages);
@@ -435,15 +447,76 @@ private class FetchDeviceSMSTask extends AsyncTask<String, Void, Map<String, Lis
 			}
 		});
 		
+		// Start searching inbox item
+		editTextInboxSearch.addTextChangedListener(new TextWatcher() {
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				String searchedText = s.toString().trim().toLowerCase();
+				if("".equals(searchedText)) {
+					
+					((BaseAdapter) listViewInbox.getAdapter()).notifyDataSetChanged();
+					
+					editTextInboxSearch.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_menu_search, 0);
+				} else {
+					
+					Map<String, List<SMSListItem>> newMap =  Utils.searchInboxItems(searchedText, map);
+					CustomInboxAdapter adapter = new CustomInboxAdapter(MainActivity.this, newMap, getResources());
+					listViewInbox.setAdapter(adapter);
+					
+					editTextInboxSearch.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_menu_close_clear_cancel, 0);
+				}
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,	int after) {
+				
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				
+			}
+		});
+		
+		editTextInboxSearch.setOnTouchListener(new RightDrawableOnTouchListener(editTextInboxSearch) {
+	        @Override
+	        public boolean onDrawableTouch(final MotionEvent event) {
+				editTextInboxSearch.setText("");
+	        	return true;
+	        }
+	    });
+		// End searching inbox item
+		
+		final ImageView imageViewToggleSearchButton = (ImageView) findViewById(R.id.imageview_seperator_inbox);
+		imageViewToggleSearchButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(editTextInboxSearch.getVisibility() == View.VISIBLE) {
+					editTextInboxSearch.setText("");
+					editTextInboxSearch.setVisibility(View.GONE);
+					//imageViewToggleSearchButton.setImageResource(R.drawable.ic_btn_down);
+					imageViewToggleSearchButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_btn_down));
+					Utils.hideKeyboard(MainActivity.this, editTextInboxSearch);
+				} else {
+					editTextInboxSearch.setVisibility(View.VISIBLE);
+					//imageViewToggleSearchButton.setImageResource(R.drawable.ic_btn_up);
+					imageViewToggleSearchButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_btn_up));
+					Utils.shwoKeyboard(MainActivity.this, editTextInboxSearch);
+				}
+			}
+		});
+		
 		AppRater.app_launched(this);
 	}
 
-	@Override
+	/*@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
-	}
+	}*/
 
 	/**
 	 * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -454,7 +527,7 @@ private class FetchDeviceSMSTask extends AsyncTask<String, Void, Map<String, Lis
 		public SectionsPagerAdapter(FragmentManager fm) {
 			super(fm);
 		}
-
+		
 		@Override
 		public Fragment getItem(int position) {
 			// getItem is called to instantiate the fragment for the given page.
@@ -592,10 +665,11 @@ private class FetchDeviceSMSTask extends AsyncTask<String, Void, Map<String, Lis
 			/******** Take some data in Arraylist ( CustomListViewValuesArr ) ***********/
 			Resources res = getActivity().getResources();
 			/**************** Create Custom Adapter *********/
-			CustomInboxAdapter adapter = new CustomInboxAdapter(getActivity(), res);
+			AppSession session = (AppSession) getActivity().getApplication();
+			final Map<String, List<SMSListItem>> map = new LinkedHashMap<String, List<SMSListItem>>(session.getMap());
+			CustomInboxAdapter adapter = new CustomInboxAdapter(getActivity(), map, res);
 			listViewInbox.setAdapter(adapter);
 		
-			AppSession session = (AppSession) getActivity().getApplication();
 			if(session.getMap() == null) {
 				((MainActivity) getActivity()).onResume();
 			} else {
@@ -658,9 +732,7 @@ private class FetchDeviceSMSTask extends AsyncTask<String, Void, Map<String, Lis
 			final EditText editTextCategoryName = (EditText) dialog.findViewById(R.id.edittext_category_name);
 			
 			// Displaying keyboard
-			editTextCategoryName.requestFocus();
-			InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-			imm.showSoftInput(editTextCategoryName, InputMethodManager.SHOW_IMPLICIT);
+			Utils.shwoKeyboard(getActivity(), editTextCategoryName);
 			
 			editTextCategoryName.addTextChangedListener(new TextWatcher() {
 				
@@ -1101,6 +1173,13 @@ private class FetchDeviceSMSTask extends AsyncTask<String, Void, Map<String, Lis
 		
 		textviewFrom.setText("Messages from " + ("".equals(sms.getPerson()) ? sms.getAddress() : sms.getPerson()));
 		
+		EditText editTextSearch = (EditText) findViewById(R.id.edittext_inbox_search);
+		Utils.hideKeyboard(this, editTextSearch);
+		editTextSearch.setVisibility(View.GONE);
+		
+		ImageView imageViewToggleSearchButton = (ImageView) findViewById(R.id.imageview_seperator_inbox);
+		imageViewToggleSearchButton.setVisibility(View.GONE);
+		
 		loadMesseges(listview, sms, mapKeyList, map);
 	}
 	
@@ -1188,9 +1267,7 @@ private class FetchDeviceSMSTask extends AsyncTask<String, Void, Map<String, Lis
 				layoutEditTextAddNewCategory.setVisibility(View.VISIBLE);
 				
 				// Displaying keyboard
-				editTextAddNewCategory.requestFocus();
-				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-				imm.showSoftInput(editTextAddNewCategory, InputMethodManager.SHOW_IMPLICIT);
+				Utils.shwoKeyboard(MainActivity.this, editTextAddNewCategory);
 			}
 		});
 		
@@ -1235,8 +1312,19 @@ private class FetchDeviceSMSTask extends AsyncTask<String, Void, Map<String, Lis
 				if(listViewInbox == null) {
 					listViewInbox = (ListView) findViewById(R.id.listview_inbox);
 				}
-				((BaseAdapter) listViewInbox.getAdapter()).notifyDataSetChanged();
+				EditText editTextInboxSearch = (EditText) findViewById(R.id.edittext_inbox_search);
+				String searchTerm = editTextInboxSearch.getText().toString().trim();
+				if("".equals(searchTerm)) {
+					((BaseAdapter) listViewInbox.getAdapter()).notifyDataSetChanged();
+				} else {
+					AppSession session = (AppSession) getApplication();
+					final Map<String, List<SMSListItem>> map = session.getMap();
+					Map<String, List<SMSListItem>> newMap =  Utils.searchInboxItems(searchTerm, map);
+					CustomInboxAdapter adapter = new CustomInboxAdapter(MainActivity.this, newMap, getResources());
+					listViewInbox.setAdapter(adapter);
+				}
 				
+				Utils.hideKeyboard(MainActivity.this, editTextAddNewCategory);
 				dialogOptions.dismiss();
 			}
 		});
@@ -1343,7 +1431,7 @@ private class FetchDeviceSMSTask extends AsyncTask<String, Void, Map<String, Lis
 		dialogOptions.show();
 	}
 	
-	private void removeNumberFromCategory(SMS sms, final Category category,final List<String> keys, final List<Category> categoryItems) {
+	private void removeNumberFromCategory(SMS sms, final Category category, final List<String> keys, final List<Category> categoryItems) {
 		
 		String categoryText = SharedPreferencesUtil.getStringPreferences(MainActivity.this, category.getCategoryName());
 		if(categoryText.contains(Utils.SEPERATOR + sms.getAddress())) {
@@ -1381,6 +1469,7 @@ private class FetchDeviceSMSTask extends AsyncTask<String, Void, Map<String, Lis
 		    .setIcon(android.R.drawable.ic_dialog_alert)
 		    .show();
 		} else {
+			
 			// Saving modified category text
 			SharedPreferencesUtil.saveStringPreferences(MainActivity.this, category.getCategoryName(), categoryText);
 			
@@ -1474,7 +1563,7 @@ private class FetchDeviceSMSTask extends AsyncTask<String, Void, Map<String, Lis
 			} while(cursor.moveToNext());
 										
 			Resources res = getResources();
-			CustomMessegeAdapter mAdapter = new CustomMessegeAdapter(MainActivity.this, messegeItems, mapKeyList, map, res);
+			CustomMessageAdapter mAdapter = new CustomMessageAdapter(MainActivity.this, messegeItems, mapKeyList, map, res);
 			listview.setAdapter(mAdapter);
 		}
 	}
@@ -1515,7 +1604,22 @@ private class FetchDeviceSMSTask extends AsyncTask<String, Void, Map<String, Lis
 			TextView textviewFrom = (TextView) findViewById(R.id.textview_inbox_from);
 			textviewFrom.setVisibility(View.GONE);
 			
-			((BaseAdapter) listViewInbox.getAdapter()).notifyDataSetChanged();
+			EditText editText = (EditText) findViewById(R.id.edittext_inbox_search);
+			editText.setVisibility(View.VISIBLE);
+			
+			ImageView imageViewToggleSearchButton = (ImageView) findViewById(R.id.imageview_seperator_inbox);
+			imageViewToggleSearchButton.setVisibility(View.VISIBLE);
+			
+			String searchText = editText.getText().toString().trim();
+			if("".equals(searchText)) {
+				((BaseAdapter) listViewInbox.getAdapter()).notifyDataSetChanged();
+			} else {
+				AppSession session = (AppSession) getApplication();
+				final Map<String, List<SMSListItem>> map = session.getMap();
+				Map<String, List<SMSListItem>> newMap =  Utils.searchInboxItems(searchText, map);
+				CustomInboxAdapter adapter = new CustomInboxAdapter(MainActivity.this, newMap, getResources());
+				listViewInbox.setAdapter(adapter);
+			}
 			return;
 		}
 		

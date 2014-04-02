@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -100,6 +101,16 @@ public class CustomCategoryInboxAdapter extends BaseAdapter   implements OnClick
             holder.textAddress.setText("No SMS found for \"" + category.getCategoryName() + "\" category");
             holder.textCount.setVisibility(View.GONE);
             holder.textBody.setVisibility(View.GONE);
+            Utils.deleteCategory(activity, category);
+            
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+              @Override
+              public void run() {
+            	  activity.onBackPressed();
+              }
+            }, 200);
+            
         }
         else {
             

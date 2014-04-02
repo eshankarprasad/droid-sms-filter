@@ -3,11 +3,14 @@ package com.devdroid.smsfilter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.v4.app.FragmentActivity;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
@@ -58,11 +61,18 @@ public class Utils {
 		return dateFormatted.replace("AM", "am").replace("PM", "pm");
 	}
 	
+	public static void shwoKeyboard(Context context, EditText editText) {
+		// Displaying keyboard
+		editText.requestFocus();
+		InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+	}
+	
 	public static void hideKeyboard(Activity activity, EditText editText) {
 		
 		InputMethodManager imm = (InputMethodManager) activity.getSystemService(
 			      Context.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+		imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
 	}
 	
 	public static void deleteCategory(Activity activity, Category category) {
@@ -130,5 +140,32 @@ public class Utils {
 		}
 		
 		return list;
+	}
+	
+	public static Map<String, List<SMSListItem>> searchInboxItems(String searchingText, Map<String, List<SMSListItem>> originalMap) {
+
+		Map<String, List<SMSListItem>> newMap = new LinkedHashMap<String, List<SMSListItem>>();
+		List<String> keys = new ArrayList<String>();
+		keys.addAll(originalMap.keySet());
+		
+		Locale l = Locale.getDefault();
+		for(int i=0; i<keys.size(); i++) {
+			
+			if(keys.get(i).toLowerCase(l).contains(searchingText)) {
+				newMap.put(keys.get(i), originalMap.get(keys.get(i)));
+			} else {
+				List<SMSListItem> listSmsListItem = originalMap.get(keys.get(i));
+				for(int j=0; j<listSmsListItem.size(); j++) {
+					SMS sms = listSmsListItem.get(j).getSms();
+					if(sms.getPerson().toLowerCase(l).contains(searchingText)) {
+						newMap.put(keys.get(i), originalMap.get(keys.get(i)));
+					} else if(sms.getBody().toLowerCase(l).contains(searchingText)) {
+						newMap.put(keys.get(i), originalMap.get(keys.get(i)));
+					}
+				}
+			}
+		}
+		
+		return newMap;
 	}
 }
